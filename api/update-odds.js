@@ -89,35 +89,38 @@ const NOMINEE_MAPPINGS = {
   'wagner moura': 'ba-4',
   'ethan hawke': 'ba-5',
   
-  // Best Actress
+  // Best Actress (actual nominees)
   'jessie buckley': 'bac-1',
-  'emma stone': 'bac-2',
+  'rose byrne': 'bac-2',
   'renate reinsve': 'bac-3',
-  'tessa thompson': 'bac-4',
-  'cynthia erivo': 'bac-5',
+  'kate hudson': 'bac-4',
+  'emma stone': 'bac-5',
   
-  // Best Supporting Actor
-  'stellan skarsgård': 'bsa-1',
-  'stellan skarsgard': 'bsa-1',
-  'benicio del toro': 'bsa-2',
-  'sean penn': 'bsa-3',
-  'jacob elordi': 'bsa-4',
-  'delroy lindo': 'bsa-5',
+  // Best Supporting Actor (actual nominees - note corrected order/IDs)
+  'sean penn': 'bsa-1',
+  'stellan skarsgård': 'bsa-2',
+  'stellan skarsgard': 'bsa-2',
+  'delroy lindo': 'bsa-3',
+  'benicio del toro': 'bsa-4',
+  'jacob elordi': 'bsa-5',
   
-  // Best Supporting Actress
-  'teyana taylor': 'bsac-1',
-  'amy madigan': 'bsac-2',
+  // Best Supporting Actress (actual nominees - Cynthia Erivo & Ariana Grande NOT nominated)
+  'amy madigan': 'bsac-1',
+  'teyana taylor': 'bsac-2',
   'wunmi mosaku': 'bsac-3',
   'elle fanning': 'bsac-4',
-  'ariana grande': 'bsac-5',
+  'inga ibsdotter lilleaas': 'bsac-5',
+  'inga lilleaas': 'bsac-5',
   
-  // Best Animated Feature
+  // Best Animated Feature (actual nominees)
   'kpop demon hunters': 'baf-1',
   'k-pop demon hunters': 'baf-1',
-  'elio': 'baf-2',
-  'legend of ochi': 'baf-3',
-  'avatar: the last airbender': 'baf-4',
-  'sandman': 'baf-5',
+  'zootopia 2': 'baf-2',
+  'zootopia': 'baf-2',
+  'elio': 'baf-3',
+  'little amélie': 'baf-4',
+  'little amelie': 'baf-4',
+  'arco': 'baf-5',
   
   // Best International
   'sentimental value': 'bif-1',
@@ -126,18 +129,19 @@ const NOMINEE_MAPPINGS = {
   'kokuho': 'bif-4',
   'waves': 'bif-5',
   
-  // Best Visual Effects
-  'avatar: fire and ash': 'bvfx-1',
-  'avatar fire': 'bvfx-1',
-  'superman': 'bvfx-3',
-  'mission impossible': 'bvfx-5',
+  // Best Visual Effects (actual nominees)
+  'frankenstein': 'bvfx-1',
+  'sinners': 'bvfx-2',
+  'f1': 'bvfx-3',
+  'one battle after another': 'bp-1', // also maps to best picture above
+  'hamnet': 'bp-3', // also maps above
   
-  // Best Original Song
-  'golden': 'bsn-1',
-  'i lied to you': 'bsn-2',
-  'mi camino': 'bsn-3',
-  'kiss the sky': 'bsn-4',
-  'never too late': 'bsn-5',
+  // Best Original Song (actual nominees)
+  'i lied to you': 'bsn-1',
+  'golden': 'bsn-2',
+  'train dreams': 'bsn-3',
+  'dear me': 'bsn-4',
+  'sweet dreams of joy': 'bsn-5',
 };
 
 export default async function handler(req, res) {
@@ -158,7 +162,7 @@ export default async function handler(req, res) {
     for (const slug of POLYMARKET_SLUGS) {
       try {
         const response = await fetch(
-          `https://gamma-api.polymarket.com/events?slug=${slug}&active=true`
+          `https://gamma-api.polymarket.com/events?slug=${slug}`
         );
         
         if (!response.ok) continue;
