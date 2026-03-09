@@ -68,8 +68,8 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-supporting-actress-winner',
     nominees: {
-      'teyana taylor': 'bsac-1',
-      'amy madigan': 'bsac-2',
+      'teyana taylor': 'bsac-2',
+      'amy madigan': 'bsac-1',
       'wunmi mosaku': 'bsac-3',
       'elle fanning': 'bsac-4',
       'inga': 'bsac-5',
@@ -241,21 +241,21 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-documentary-short-film-winner-513',
     nominees: {
-      'empty rooms': 'bds-1',
-      'armed only': 'bds-2',
-      'children no more': 'bds-3',
-      'devil is busy': 'bds-4',
-      'strangeness': 'bds-5',
+      'empty rooms': 'bdsh-1',
+      'armed only': 'bdsh-2',
+      'children no more': 'bdsh-3',
+      'devil is busy': 'bdsh-4',
+      'strangeness': 'bdsh-5',
     },
   },
   {
     slug: 'oscars-2026-best-animated-short-film-winner',
     nominees: {
-      'butterfly': 'bas2-1',
-      'forevergreen': 'bas2-2',
-      'cried pearls': 'bas2-3',
-      'retirement plan': 'bas2-4',
-      'three sisters': 'bas2-5',
+      'butterfly': 'bash-1',
+      'forevergreen': 'bash-2',
+      'cried pearls': 'bash-3',
+      'retirement plan': 'bash-4',
+      'three sisters': 'bash-5',
     },
   },
 ];
