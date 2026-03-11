@@ -219,7 +219,11 @@ export default function App() {
     const { error } = await supabase
       .from('odds')
       .upsert({ nominee_id: nomineeId, odds: parsed }, { onConflict: 'nominee_id' });
-    if (!error) setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
+    if (error) {
+      alert(`Failed to save odds: ${error.message}`);
+    } else {
+      setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
+    }
   }
 
   // Admin: Remove player
