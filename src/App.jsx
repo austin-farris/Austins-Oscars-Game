@@ -242,39 +242,43 @@ export default function App() {
     else setWinners(newWinners);
   }
 
-  // Admin: Update odds for a nominee — uses check-then-update/insert pattern
-  // to avoid upsert failures from RLS or missing rows
+  // Admin: Update odds for a nominee
+  // Strategy: try update first (most common case), fall back to insert if no row exists
   async function updateNomineeOdds(nomineeId, newOdds) {
     const parsed = parseFloat(newOdds);
-    if (isNaN(parsed) || parsed < 0 || parsed > 1) return;
+    if (isNaN(parsed) || parsed < 0 || parsed > 1) {
+      throw new Error('Odds must be between 0 and 1');
+    }
 
-    // Check if this nominee already has an odds row
-    const { data: existing } = await supabase
+    // Try update first
+    const { data: updated, error: updateErr } = await supabase
       .from('odds')
-      .select('nominee_id')
+      .update({ odds: parsed })
       .eq('nominee_id', nomineeId)
-      .maybeSingle();
+      .select();
 
-    let error;
-    if (existing) {
-      // Row exists — update it
-      ({ error } = await supabase
-        .from('odds')
-        .update({ odds: parsed })
-        .eq('nominee_id', nomineeId));
-    } else {
-      // No row yet — insert a new one
-      ({ error } = await supabase
-        .from('odds')
-        .insert({ nominee_id: nomineeId, odds: parsed }));
+    if (updateErr) {
+      console.error('Update error:', updateErr);
+      // Fall through to insert
     }
 
-    if (error) {
-      console.error('Odds save error:', error);
-      throw new Error(error.message);
-    } else {
+    // If update touched a row, we're done
+    if (updated && updated.length > 0) {
       setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
+      return;
     }
+
+    // No existing row — insert
+    const { error: insertErr } = await supabase
+      .from('odds')
+      .insert({ nominee_id: nomineeId, odds: parsed });
+
+    if (insertErr) {
+      console.error('Insert error:', insertErr);
+      throw new Error(insertErr.message);
+    }
+
+    setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
   }
 
   // Admin: Remove player
