@@ -5,6 +5,48 @@ import { CATEGORIES, CATEGORY_GROUPS, calculatePoints } from './categories';
 // Admin password - CHANGE THIS!
 const ADMIN_PASSWORD = "oscar2026";
 
+// Buffered odds input — stores local string while editing, only saves to DB on blur or Enter
+function OddsInput({ nominee, currentOdds, onSave, calculatePoints, styles }) {
+  const [localVal, setLocalVal] = useState(String(currentOdds));
+  const [saved, setSaved] = useState(false);
+
+  // Sync if parent odds change (e.g. after Polymarket fetch)
+  useEffect(() => {
+    setLocalVal(String(currentOdds));
+  }, [currentOdds]);
+
+  function commit() {
+    const parsed = parseFloat(localVal);
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
+      onSave(parsed);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+      <span style={{ minWidth: '150px', fontSize: '0.9rem' }}>{nominee.name}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          max="1"
+          value={localVal}
+          onChange={(e) => setLocalVal(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => { if (e.key === 'Enter') { commit(); e.target.blur(); } }}
+          style={{ width: '80px', padding: '6px', borderRadius: '4px', border: `1px solid ${saved ? '#22c55e' : 'rgba(255,215,0,0.4)'}`, background: 'rgba(0,0,0,0.3)', color: '#f5f5f5', textAlign: 'center', transition: 'border-color 0.3s' }}
+        />
+        <span style={{ ...styles.sans, color: saved ? '#22c55e' : '#ffd700', width: '70px', fontSize: '0.85rem', transition: 'color 0.3s' }}>
+          {saved ? '✓ saved' : `= ${calculatePoints(parseFloat(localVal) || currentOdds)} pts`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // Core state
   const [players, setPlayers] = useState([]);
@@ -759,26 +801,17 @@ export default function App() {
                     {CATEGORIES.map(category => (
                       <div key={category.id} style={{ ...styles.card, padding: '16px' }}>
                         <h4 style={{ color: '#ffd700', marginTop: 0, marginBottom: '12px' }}>
-                          {category.emoji} {category.name}
+                          {category.name}
                         </h4>
                         {category.nominees.map(nominee => (
-                          <div key={nominee.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-                            <span style={{ minWidth: '150px' }}>{nominee.name}</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="1"
-                                value={getOdds(nominee)}
-                                onChange={(e) => updateNomineeOdds(nominee.id, e.target.value)}
-                                style={{ width: '80px', padding: '6px', borderRadius: '4px', border: '1px solid rgba(255,215,0,0.4)', background: 'rgba(0,0,0,0.3)', color: '#f5f5f5', textAlign: 'center' }}
-                              />
-                              <span style={{ ...styles.sans, color: '#ffd700', width: '60px' }}>
-                                = {calculatePoints(getOdds(nominee))} pts
-                              </span>
-                            </div>
-                          </div>
+                          <OddsInput
+                            key={nominee.id}
+                            nominee={nominee}
+                            currentOdds={getOdds(nominee)}
+                            onSave={(val) => updateNomineeOdds(nominee.id, val)}
+                            calculatePoints={calculatePoints}
+                            styles={styles}
+                          />
                         ))}
                       </div>
                     ))}
