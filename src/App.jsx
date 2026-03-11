@@ -81,7 +81,8 @@ export default function App() {
   // Core state
   const [players, setPlayers] = useState([]);
   const [winners, setWinners] = useState({}); // { categoryId: nomineeId }
-  const [odds, setOdds] = useState({}); // { nomineeId: odds }
+  const [manualOdds, setManualOdds] = useState({}); // { nomineeId: odds } — stored in settings table
+  const [polymarketOdds, setPolymarketOdds] = useState({}); // { nomineeId: odds } — from odds table
   const [loading, setLoading] = useState(true);
 
   // UI state
@@ -120,7 +121,7 @@ export default function App() {
 
     const oddsSub = supabase
       .channel('odds-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'odds' }, loadOdds)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'odds' }, loadPolymarketOdds)
       .subscribe();
 
     return () => {
@@ -132,7 +133,7 @@ export default function App() {
 
   async function loadData() {
     setLoading(true);
-    await Promise.all([loadPlayers(), loadSettings(), loadOdds()]);
+    await Promise.all([loadPlayers(), loadSettings(), loadPolymarketOdds()]);
     setLoading(false);
   }
 
@@ -150,23 +151,26 @@ export default function App() {
       .select('*')
       .eq('id', 1)
       .single();
-    if (!error && data && data.winners) {
-      setWinners(data.winners);
+    if (!error && data) {
+      if (data.winners) setWinners(data.winners);
+      if (data.manual_odds) setManualOdds(data.manual_odds);
     }
   }
 
-  async function loadOdds() {
+  async function loadPolymarketOdds() {
     const { data, error } = await supabase.from('odds').select('*');
     if (!error && data) {
       const oddsMap = {};
       data.forEach(o => { oddsMap[o.nominee_id] = o.odds; });
-      setOdds(oddsMap);
+      setPolymarketOdds(oddsMap);
     }
   }
 
-  // Get odds for a nominee (from DB or default)
+  // Get odds for a nominee: manual override > polymarket > default from categories.js
   const getOdds = (nominee) => {
-    return odds[nominee.id] !== undefined ? odds[nominee.id] : nominee.odds;
+    if (manualOdds[nominee.id] !== undefined) return manualOdds[nominee.id];
+    if (polymarketOdds[nominee.id] !== undefined) return polymarketOdds[nominee.id];
+    return nominee.odds;
   };
 
   // Admin functions
@@ -219,7 +223,7 @@ export default function App() {
     setSubmitting(false);
   }
 
-  // Admin: Set winner
+  // Admin: Set winner — writes to settings.winners JSONB
   async function setWinner(categoryId, nomineeId) {
     const newWinners = { ...winners, [categoryId]: nomineeId };
     const { error } = await supabase
@@ -242,43 +246,27 @@ export default function App() {
     else setWinners(newWinners);
   }
 
-  // Admin: Update odds for a nominee
-  // Strategy: try update first (most common case), fall back to insert if no row exists
+  // Admin: Update odds manually — writes to settings.manual_odds JSONB
+  // Uses the SAME settings table + row as winners, which we know works
   async function updateNomineeOdds(nomineeId, newOdds) {
     const parsed = parseFloat(newOdds);
     if (isNaN(parsed) || parsed < 0 || parsed > 1) {
       throw new Error('Odds must be between 0 and 1');
     }
 
-    // Try update first
-    const { data: updated, error: updateErr } = await supabase
-      .from('odds')
-      .update({ odds: parsed })
-      .eq('nominee_id', nomineeId)
-      .select();
+    const newManualOdds = { ...manualOdds, [nomineeId]: parsed };
 
-    if (updateErr) {
-      console.error('Update error:', updateErr);
-      // Fall through to insert
+    const { error } = await supabase
+      .from('settings')
+      .update({ manual_odds: newManualOdds })
+      .eq('id', 1);
+
+    if (error) {
+      console.error('Manual odds save error:', error);
+      throw new Error(error.message);
     }
 
-    // If update touched a row, we're done
-    if (updated && updated.length > 0) {
-      setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
-      return;
-    }
-
-    // No existing row — insert
-    const { error: insertErr } = await supabase
-      .from('odds')
-      .insert({ nominee_id: nomineeId, odds: parsed });
-
-    if (insertErr) {
-      console.error('Insert error:', insertErr);
-      throw new Error(insertErr.message);
-    }
-
-    setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
+    setManualOdds(newManualOdds);
   }
 
   // Admin: Remove player
@@ -290,8 +278,9 @@ export default function App() {
   async function resetAll() {
     if (!confirm('Delete ALL players and winners? This cannot be undone!')) return;
     await supabase.from('players').delete().neq('id', 0);
-    await supabase.from('settings').update({ winners: {} }).eq('id', 1);
+    await supabase.from('settings').update({ winners: {}, manual_odds: {} }).eq('id', 1);
     setWinners({});
+    setManualOdds({});
   }
 
   // Calculate player's total score
@@ -839,7 +828,7 @@ export default function App() {
                             const data = await res.json();
                             if (data.success) {
                               alert(`✓ Updated odds from Polymarket!`);
-                              loadOdds();
+                              loadPolymarketOdds();
                             } else {
                               alert('Error: ' + (data.error || 'Unknown error'));
                             }
@@ -853,9 +842,29 @@ export default function App() {
                       </button>
                     </div>
                     
-                    <p style={{ ...styles.sans, fontSize: '0.9rem', opacity: 0.7, marginBottom: '16px' }}>
-                      Or manually update below (enter as decimal: 0.75 = 75%)
-                    </p>
+                    <div style={{ ...styles.card, background: 'rgba(255,165,0,0.1)', borderColor: 'rgba(255,165,0,0.3)' }}>
+                      <p style={{ ...styles.sans, fontSize: '0.9rem', marginBottom: '8px' }}>
+                        ✏️ <strong>Manual overrides below</strong> — these take priority over Polymarket odds.
+                      </p>
+                      <p style={{ ...styles.sans, fontSize: '0.8rem', opacity: 0.7 }}>
+                        Enter as decimal: 0.75 = 75%. Manual overrides are saved to the settings table.
+                      </p>
+                      {Object.keys(manualOdds).length > 0 && (
+                        <button
+                          onClick={async () => {
+                            if (!confirm('Clear all manual overrides? Odds will revert to Polymarket / defaults.')) return;
+                            const { error } = await supabase
+                              .from('settings')
+                              .update({ manual_odds: {} })
+                              .eq('id', 1);
+                            if (!error) setManualOdds({});
+                          }}
+                          style={{ ...styles.sans, marginTop: '8px', padding: '6px 12px', background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', borderRadius: '4px', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem' }}
+                        >
+                          Clear All Manual Overrides ({Object.keys(manualOdds).length})
+                        </button>
+                      )}
+                    </div>
                     
                     {CATEGORIES.map(category => (
                       <div key={category.id} style={{ ...styles.card, padding: '16px' }}>
