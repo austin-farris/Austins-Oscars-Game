@@ -9,19 +9,32 @@ const ADMIN_PASSWORD = "oscar2026";
 function OddsInput({ nominee, currentOdds, onSave, calculatePoints, styles }) {
   const [localVal, setLocalVal] = useState(String(currentOdds));
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Sync if parent odds change (e.g. after Polymarket fetch)
   useEffect(() => {
     setLocalVal(String(currentOdds));
   }, [currentOdds]);
 
-  function commit() {
+  async function commit() {
     const parsed = parseFloat(localVal);
-    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
-      onSave(parsed);
+    if (isNaN(parsed) || parsed < 0 || parsed > 1) {
+      setError('Must be 0–1');
+      setTimeout(() => setError(null), 2000);
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave(parsed);
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
+    } catch (err) {
+      setError('Save failed');
+      setTimeout(() => setError(null), 3000);
     }
+    setSaving(false);
   }
 
   return (
@@ -37,10 +50,27 @@ function OddsInput({ nominee, currentOdds, onSave, calculatePoints, styles }) {
           onChange={(e) => setLocalVal(e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => { if (e.key === 'Enter') { commit(); e.target.blur(); } }}
-          style={{ width: '80px', padding: '6px', borderRadius: '4px', border: `1px solid ${saved ? '#22c55e' : 'rgba(255,215,0,0.4)'}`, background: 'rgba(0,0,0,0.3)', color: '#f5f5f5', textAlign: 'center', transition: 'border-color 0.3s' }}
+          style={{
+            width: '80px',
+            padding: '6px',
+            borderRadius: '4px',
+            border: `1px solid ${error ? '#ef4444' : saved ? '#22c55e' : 'rgba(255,215,0,0.4)'}`,
+            background: 'rgba(0,0,0,0.3)',
+            color: '#f5f5f5',
+            textAlign: 'center',
+            transition: 'border-color 0.3s',
+            opacity: saving ? 0.5 : 1,
+          }}
+          disabled={saving}
         />
-        <span style={{ ...styles.sans, color: saved ? '#22c55e' : '#ffd700', width: '70px', fontSize: '0.85rem', transition: 'color 0.3s' }}>
-          {saved ? '✓ saved' : `= ${calculatePoints(parseFloat(localVal) || currentOdds)} pts`}
+        <span style={{
+          ...styles.sans,
+          color: error ? '#ef4444' : saved ? '#22c55e' : '#ffd700',
+          width: '90px',
+          fontSize: '0.85rem',
+          transition: 'color 0.3s',
+        }}>
+          {error ? error : saving ? '...' : saved ? '✓ saved' : `= ${calculatePoints(parseFloat(localVal) || currentOdds)} pts`}
         </span>
       </div>
     </div>
@@ -212,15 +242,36 @@ export default function App() {
     else setWinners(newWinners);
   }
 
-  // Admin: Update odds for a nominee
+  // Admin: Update odds for a nominee — uses check-then-update/insert pattern
+  // to avoid upsert failures from RLS or missing rows
   async function updateNomineeOdds(nomineeId, newOdds) {
     const parsed = parseFloat(newOdds);
     if (isNaN(parsed) || parsed < 0 || parsed > 1) return;
-    const { error } = await supabase
+
+    // Check if this nominee already has an odds row
+    const { data: existing } = await supabase
       .from('odds')
-      .upsert({ nominee_id: nomineeId, odds: parsed }, { onConflict: 'nominee_id' });
+      .select('nominee_id')
+      .eq('nominee_id', nomineeId)
+      .maybeSingle();
+
+    let error;
+    if (existing) {
+      // Row exists — update it
+      ({ error } = await supabase
+        .from('odds')
+        .update({ odds: parsed })
+        .eq('nominee_id', nomineeId));
+    } else {
+      // No row yet — insert a new one
+      ({ error } = await supabase
+        .from('odds')
+        .insert({ nominee_id: nomineeId, odds: parsed }));
+    }
+
     if (error) {
-      alert(`Failed to save odds: ${error.message}`);
+      console.error('Odds save error:', error);
+      throw new Error(error.message);
     } else {
       setOdds(prev => ({ ...prev, [nomineeId]: parsed }));
     }
