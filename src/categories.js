@@ -1,5 +1,6 @@
 // All 24 Oscar categories with nominees and current Polymarket odds
-// Updated: March 12, 2026 (from live Polymarket data)
+// Updated: March 12, 2026 — corrected all nominees against oscars.org/NPR/Landmark
+// Doc Feature, Doc Short, Animated Short, Live Action Short all verified
 
 export const CATEGORIES = [
   // ===== THE BIG 8 =====
@@ -121,10 +122,10 @@ export const CATEGORIES = [
     polymarketSlug: "oscars-2026-best-casting-winner",
     nominees: [
       { id: "bcast-1", name: "Sinners", meta: "Francine Maisler", odds: 0.80 },
-      { id: "bcast-2", name: "One Battle After Another", meta: "Unknown", odds: 0.13 },
-      { id: "bcast-3", name: "Hamnet", meta: "Unknown", odds: 0.03 },
-      { id: "bcast-4", name: "Marty Supreme", meta: "Unknown", odds: 0.02 },
-      { id: "bcast-5", name: "The Secret Agent", meta: "Unknown", odds: 0.02 },
+      { id: "bcast-2", name: "One Battle After Another", meta: "Cassandra Kulukundis", odds: 0.13 },
+      { id: "bcast-3", name: "Hamnet", meta: "Nina Gold", odds: 0.03 },
+      { id: "bcast-4", name: "Marty Supreme", meta: "Jennifer Venditti", odds: 0.02 },
+      { id: "bcast-5", name: "The Secret Agent", meta: "Gabriel Domingues", odds: 0.02 },
     ]
   },
   {
@@ -185,11 +186,11 @@ export const CATEGORIES = [
     emoji: "💄",
     polymarketSlug: "oscars-2026-best-makeup-and-hairstyling-winner",
     nominees: [
-      { id: "bmh-1", name: "Frankenstein", meta: "Unknown", odds: 0.84 },
-      { id: "bmh-2", name: "Sinners", meta: "Unknown", odds: 0.06 },
-      { id: "bmh-3", name: "The Ugly Stepsister", meta: "Unknown", odds: 0.05 },
-      { id: "bmh-4", name: "One Battle After Another", meta: "Unknown", odds: 0.03 },
-      { id: "bmh-5", name: "Kokuho", meta: "Unknown", odds: 0.02 },
+      { id: "bmh-1", name: "Frankenstein", meta: "Mike Hill, Jordan Samuel & Cliona Furey", odds: 0.84 },
+      { id: "bmh-2", name: "Kokuho", meta: "Kyoko Toyokawa et al.", odds: 0.05 },
+      { id: "bmh-3", name: "Sinners", meta: "Ken Diaz et al.", odds: 0.05 },
+      { id: "bmh-4", name: "The Smashing Machine", meta: "Kazu Hiro et al.", odds: 0.03 },
+      { id: "bmh-5", name: "The Ugly Stepsister", meta: "Thomas Foldberg et al.", odds: 0.03 },
     ]
   },
   {
@@ -211,11 +212,11 @@ export const CATEGORIES = [
     emoji: "🎤",
     polymarketSlug: "oscars-2026-best-original-song-winner-257",
     nominees: [
-      { id: "bsn-1", name: "Golden", meta: "KPop Demon Hunters", odds: 0.88 },
-      { id: "bsn-2", name: "I Lied to You", meta: "Sinners", odds: 0.09 },
-      { id: "bsn-3", name: "Mi Camino", meta: "Elio", odds: 0.02 },
-      { id: "bsn-4", name: "Kiss the Sky", meta: "The Wild Robot", odds: 0.005 },
-      { id: "bsn-5", name: "Never Too Late", meta: "Elton John: Never Too Late", odds: 0.005 },
+      { id: "bsn-1", name: "\"Golden\"", meta: "KPop Demon Hunters", odds: 0.88 },
+      { id: "bsn-2", name: "\"I Lied to You\"", meta: "Sinners", odds: 0.09 },
+      { id: "bsn-3", name: "\"Mi Camino\"", meta: "Elio", odds: 0.02 },
+      { id: "bsn-4", name: "\"Kiss the Sky\"", meta: "The Wild Robot", odds: 0.005 },
+      { id: "bsn-5", name: "\"Never Too Late\"", meta: "Elton John: Never Too Late", odds: 0.005 },
     ]
   },
   {
@@ -228,7 +229,7 @@ export const CATEGORIES = [
       { id: "bsd-2", name: "F1", meta: "Unknown", odds: 0.25 },
       { id: "bsd-3", name: "One Battle After Another", meta: "Unknown", odds: 0.10 },
       { id: "bsd-4", name: "Frankenstein", meta: "Unknown", odds: 0.06 },
-      { id: "bsd-5", name: "Mission: Impossible 8", meta: "Unknown", odds: 0.04 },
+      { id: "bsd-5", name: "Mission: Impossible – The Final Reckoning", meta: "Unknown", odds: 0.04 },
     ]
   },
   {
@@ -241,7 +242,7 @@ export const CATEGORIES = [
       { id: "bvfx-2", name: "Frankenstein", meta: "Unknown", odds: 0.04 },
       { id: "bvfx-3", name: "Superman", meta: "Unknown", odds: 0.03 },
       { id: "bvfx-4", name: "Wicked: For Good", meta: "Unknown", odds: 0.01 },
-      { id: "bvfx-5", name: "Mission: Impossible 8", meta: "Unknown", odds: 0.01 },
+      { id: "bvfx-5", name: "Mission: Impossible – The Final Reckoning", meta: "Unknown", odds: 0.01 },
     ]
   },
 
@@ -267,9 +268,9 @@ export const CATEGORIES = [
     nominees: [
       { id: "bif-1", name: "Sentimental Value", meta: "Norway", odds: 0.67 },
       { id: "bif-2", name: "The Secret Agent", meta: "Brazil", odds: 0.20 },
-      { id: "bif-3", name: "The Ugly Stepsister", meta: "Denmark", odds: 0.06 },
-      { id: "bif-4", name: "Kokuho", meta: "Japan", odds: 0.04 },
-      { id: "bif-5", name: "Waves", meta: "Czech Republic", odds: 0.03 },
+      { id: "bif-3", name: "It Was Just an Accident", meta: "France", odds: 0.06 },
+      { id: "bif-4", name: "Sirāt", meta: "Spain", odds: 0.04 },
+      { id: "bif-5", name: "The Voice of Hind Rajab", meta: "Tunisia", odds: 0.03 },
     ]
   },
   {
@@ -278,11 +279,11 @@ export const CATEGORIES = [
     emoji: "📹",
     polymarketSlug: "oscars-2026-best-documentary-feature-film-winner",
     nominees: [
-      { id: "bdf-1", name: "Searching for Amani", meta: "Unknown", odds: 0.40 },
-      { id: "bdf-2", name: "Mr. Nobody Against Putin", meta: "Unknown", odds: 0.30 },
-      { id: "bdf-3", name: "The Battle for Laikipia", meta: "Unknown", odds: 0.15 },
-      { id: "bdf-4", name: "Eno", meta: "Unknown", odds: 0.10 },
-      { id: "bdf-5", name: "Soundtrack to a Coup d'Etat", meta: "Unknown", odds: 0.05 },
+      { id: "bdf-1", name: "The Alabama Solution", meta: "Andrew Jarecki & Charlotte Kaufman", odds: 0.25 },
+      { id: "bdf-2", name: "Come See Me in the Good Light", meta: "Ryan White et al.", odds: 0.10 },
+      { id: "bdf-3", name: "Cutting Through Rocks", meta: "Sara Khaki & Mohammadreza Eyni", odds: 0.15 },
+      { id: "bdf-4", name: "Mr. Nobody Against Putin", meta: "David Borenstein", odds: 0.15 },
+      { id: "bdf-5", name: "The Perfect Neighbor", meta: "Geeta Gandbhir et al.", odds: 0.35 },
     ]
   },
 
@@ -290,14 +291,14 @@ export const CATEGORIES = [
   {
     id: "best-animated-short",
     name: "Best Animated Short",
-    emoji: "🎬",
+    emoji: "✏️",
     polymarketSlug: "oscars-2026-best-animated-short-film-winner",
     nominees: [
-      { id: "bash-1", name: "Butterfly", meta: "Unknown", odds: 0.48 },
-      { id: "bash-2", name: "The Girl Who Cried Pearls", meta: "Unknown", odds: 0.23 },
-      { id: "bash-3", name: "In the Shadow of the Cypress", meta: "Unknown", odds: 0.15 },
-      { id: "bash-4", name: "A Bear Named Wojtek", meta: "Unknown", odds: 0.09 },
-      { id: "bash-5", name: "Yuck!", meta: "Unknown", odds: 0.05 },
+      { id: "bash-1", name: "Butterfly", meta: "Florence Miailhe", odds: 0.25 },
+      { id: "bash-2", name: "Forevergreen", meta: "Nathan Engelhardt & Jeremy Spears", odds: 0.15 },
+      { id: "bash-3", name: "The Girl Who Cried Pearls", meta: "Chris Lavis & Maciek Szczerbowski", odds: 0.25 },
+      { id: "bash-4", name: "Retirement Plan", meta: "John Kelly & Andrew Freedman", odds: 0.20 },
+      { id: "bash-5", name: "The Three Sisters", meta: "Konstantin Bronzit", odds: 0.15 },
     ]
   },
   {
@@ -306,11 +307,11 @@ export const CATEGORIES = [
     emoji: "🎥",
     polymarketSlug: "oscars-2026-best-live-action-short-film-winner",
     nominees: [
-      { id: "blas-1", name: "Two People Exchanging Saliva", meta: "France", odds: 0.34 },
-      { id: "blas-2", name: "Friend of Dorothy", meta: "UK", odds: 0.28 },
-      { id: "blas-3", name: "The Singers", meta: "Unknown", odds: 0.24 },
-      { id: "blas-4", name: "Anuja", meta: "India", odds: 0.09 },
-      { id: "blas-5", name: "I'm Not a Robot", meta: "Unknown", odds: 0.05 },
+      { id: "blas-1", name: "Butcher's Stain", meta: "Unknown", odds: 0.15 },
+      { id: "blas-2", name: "A Friend of Dorothy", meta: "UK", odds: 0.25 },
+      { id: "blas-3", name: "Jane Austen's Period Drama", meta: "Unknown", odds: 0.15 },
+      { id: "blas-4", name: "The Singers", meta: "Unknown", odds: 0.25 },
+      { id: "blas-5", name: "Two People Exchanging Saliva", meta: "France", odds: 0.20 },
     ]
   },
   {
@@ -319,11 +320,11 @@ export const CATEGORIES = [
     emoji: "🎞️",
     polymarketSlug: "oscars-2026-best-documentary-short-film-winner-513",
     nominees: [
-      { id: "bds-1", name: "Instruments of a Beating Heart", meta: "Unknown", odds: 0.35 },
-      { id: "bds-2", name: "The Only Girl in the Orchestra", meta: "Unknown", odds: 0.30 },
-      { id: "bds-3", name: "Death by Numbers", meta: "Unknown", odds: 0.20 },
-      { id: "bds-4", name: "I Am Ready, Warden", meta: "Unknown", odds: 0.10 },
-      { id: "bds-5", name: "Incident", meta: "Unknown", odds: 0.05 },
+      { id: "bds-1", name: "All the Empty Rooms", meta: "Joshua Seftel & Conall Jones", odds: 0.20 },
+      { id: "bds-2", name: "Armed Only with a Camera", meta: "Craig Renaud & Juan Arredondo", odds: 0.20 },
+      { id: "bds-3", name: "Children No More", meta: "Hilla Medalia & Sheila Nevins", odds: 0.15 },
+      { id: "bds-4", name: "The Devil Is Busy", meta: "Christalyn Hampton & Geeta Gandbhir", odds: 0.25 },
+      { id: "bds-5", name: "Perfectly a Strangeness", meta: "Alison McAlpine", odds: 0.20 },
     ]
   },
 ];
@@ -335,7 +336,7 @@ export const CATEGORY_GROUPS = [
     emoji: "⭐",
     categoryIds: [
       "best-picture",
-      "best-director", 
+      "best-director",
       "best-actor",
       "best-actress",
       "best-supporting-actor",
