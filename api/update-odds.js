@@ -2,6 +2,8 @@
 // Strategy: query /events?slug= for each category, then scan all child markets
 // and match nominees by substring search against question text.
 // Scoped per-category to prevent cross-category ID collisions.
+//
+// Updated: March 12, 2026 — nominee IDs matched to categories.js
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -29,7 +31,7 @@ const CATEGORIES = [
     nominees: {
       'paul thomas anderson': 'bd-1',
       'ryan coogler': 'bd-2',
-      'chlo': 'bd-3',         // Chloé Zhao - accent may vary in slug
+      'chlo': 'bd-3',
       'josh safdie': 'bd-4',
       'joachim trier': 'bd-5',
     },
@@ -37,51 +39,59 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-actor-winner',
     nominees: {
-      'timothe': 'ba-1',       // Timothée - accent stripped in slugs
-      'michael b': 'ba-2',
+      'michael b': 'ba-1',
+      'jordan': 'ba-1',
+      'timothe': 'ba-2',
+      'chalamet': 'ba-2',
       'leonardo dicaprio': 'ba-3',
-      'ethan hawke': 'ba-4',
-      'wagner moura': 'ba-5',
+      'dicaprio': 'ba-3',
+      'wagner moura': 'ba-4',
+      'ethan hawke': 'ba-5',
     },
   },
   {
     slug: 'oscars-2026-best-actress-winner',
     nominees: {
       'jessie buckley': 'bac-1',
+      'buckley': 'bac-1',
       'rose byrne': 'bac-2',
-      'renate reinsve': 'bac-3',
-      'kate hudson': 'bac-4',
-      'emma stone': 'bac-5',
+      'emma stone': 'bac-3',
+      'renate reinsve': 'bac-4',
+      'kate hudson': 'bac-5',
     },
   },
   {
     slug: 'oscars-2026-best-supporting-actor-winner',
     nominees: {
       'sean penn': 'bsa-1',
-      'stellan skarsг': 'bsa-2',   // catch skarsgård / skarsgrd variants
+      'stellan': 'bsa-2',
       'skarsg': 'bsa-2',
-      'delroy lindo': 'bsa-3',
-      'benicio del toro': 'bsa-4',
-      'jacob elordi': 'bsa-5',
+      'benicio': 'bsa-3',
+      'del toro': 'bsa-3',
+      'jacob elordi': 'bsa-4',
+      'delroy lindo': 'bsa-5',
     },
   },
   {
     slug: 'oscars-2026-best-supporting-actress-winner',
     nominees: {
-      'teyana taylor': 'bsac-2',
       'amy madigan': 'bsac-1',
-      'wunmi mosaku': 'bsac-3',
-      'elle fanning': 'bsac-4',
-      'inga': 'bsac-5',
+      'teyana taylor': 'bsac-2',
+      'elle fanning': 'bsac-3',
+      'inga': 'bsac-4',
+      'lilleaas': 'bsac-4',
+      'wunmi mosaku': 'bsac-5',
+      'mosaku': 'bsac-5',
     },
   },
   {
     slug: 'oscars-2026-best-original-screenplay-winner',
     nominees: {
       'sinners': 'bos-1',
-      'marty supreme': 'bos-2',
-      'sentimental value': 'bos-3',
+      'sentimental value': 'bos-2',
+      'marty supreme': 'bos-3',
       'it was just an accident': 'bos-4',
+      'accident': 'bos-4',
       'blue moon': 'bos-5',
     },
   },
@@ -90,51 +100,30 @@ const CATEGORIES = [
     nominees: {
       'one battle after another': 'bas-1',
       'hamnet': 'bas-2',
-      'bugonia': 'bas-3',
-      'frankenstein': 'bas-4',
+      'frankenstein': 'bas-3',
+      'bugonia': 'bas-4',
       'train dreams': 'bas-5',
     },
   },
+  // ===== TECHNICAL =====
   {
-    slug: 'oscars-2026-best-animated-feature-film-winner',
+    slug: 'oscars-2026-best-casting-winner',
     nominees: {
-      'kpop demon hunters': 'baf-1',
-      'k-pop demon hunters': 'baf-1',
-      'zootopia': 'baf-2',
-      'elio': 'baf-3',
-      'am': 'baf-4',           // little amélie / amlie
-      'arco': 'baf-5',
-    },
-  },
-  {
-    slug: 'oscars-2026-best-international-feature-film-winner',
-    nominees: {
-      'sentimental value': 'bif-1',
-      'the secret agent': 'bif-2',
-      'it was just an accident': 'bif-3',
-      'sirat': 'bif-4',
-      'hind rajab': 'bif-5',
-    },
-  },
-  {
-    slug: 'oscars-2026-best-documentary-feature-film-winner',
-    nominees: {
-      'alabama solution': 'bdf-1',
-      'come see me': 'bdf-2',
-      'cutting through rocks': 'bdf-3',
-      'mr. nobody': 'bdf-4',
-      'nobody against putin': 'bdf-4',
-      'perfect neighbor': 'bdf-5',
+      'sinners': 'bcast-1',
+      'one battle after another': 'bcast-2',
+      'hamnet': 'bcast-3',
+      'marty supreme': 'bcast-4',
+      'the secret agent': 'bcast-5',
     },
   },
   {
     slug: 'oscars-2026-best-cinematography-winner',
     nominees: {
-      'sinners': 'bc-1',
-      'one battle after another': 'bc-2',
+      'one battle after another': 'bc-1',
+      'sinners': 'bc-2',
       'frankenstein': 'bc-3',
       'marty supreme': 'bc-4',
-      'train dreams': 'bc-5',
+      'hamnet': 'bc-5',
     },
   },
   {
@@ -143,18 +132,18 @@ const CATEGORIES = [
       'one battle after another': 'bfe-1',
       'sinners': 'bfe-2',
       'marty supreme': 'bfe-3',
-      'sentimental value': 'bfe-4',
-      'f1': 'bfe-5',
+      'f1': 'bfe-4',
+      'sentimental value': 'bfe-5',
     },
   },
   {
     slug: 'oscars-2026-best-production-design-winner',
     nominees: {
       'frankenstein': 'bpd-1',
-      'hamnet': 'bpd-2',
+      'sinners': 'bpd-2',
       'one battle after another': 'bpd-3',
-      'marty supreme': 'bpd-4',
-      'sinners': 'bpd-5',
+      'hamnet': 'bpd-4',
+      'marty supreme': 'bpd-5',
     },
   },
   {
@@ -171,10 +160,10 @@ const CATEGORIES = [
     slug: 'oscars-2026-best-makeup-and-hairstyling-winner',
     nominees: {
       'frankenstein': 'bmh-1',
-      'kokuho': 'bmh-2',
-      'sinners': 'bmh-3',
-      'smashing machine': 'bmh-4',
-      'ugly stepsister': 'bmh-5',
+      'sinners': 'bmh-2',
+      'ugly stepsister': 'bmh-3',
+      'one battle after another': 'bmh-4',
+      'kokuho': 'bmh-5',
     },
   },
   {
@@ -182,8 +171,8 @@ const CATEGORIES = [
     nominees: {
       'sinners': 'bsc-1',
       'one battle after another': 'bsc-2',
-      'hamnet': 'bsc-3',
-      'frankenstein': 'bsc-4',
+      'frankenstein': 'bsc-3',
+      'hamnet': 'bsc-4',
       'bugonia': 'bsc-5',
     },
   },
@@ -193,69 +182,106 @@ const CATEGORIES = [
     nominees: {
       'golden': 'bsn-1',
       'i lied to you': 'bsn-2',
-      'train dreams': 'bsn-3',
-      'dear me': 'bsn-4',
-      'sweet dreams': 'bsn-5',
+      'mi camino': 'bsn-3',
+      'kiss the sky': 'bsn-4',
+      'never too late': 'bsn-5',
     },
   },
   {
     slug: 'oscars-2026-best-sound-winner',
     nominees: {
       'sinners': 'bsd-1',
-      'one battle after another': 'bsd-2',
-      'f1': 'bsd-3',
+      'f1': 'bsd-2',
+      'one battle after another': 'bsd-3',
       'frankenstein': 'bsd-4',
-      'sirat': 'bsd-5',
+      'mission': 'bsd-5',
     },
   },
   {
     slug: 'oscars-2026-best-visual-effects-winner',
     nominees: {
       'avatar': 'bvfx-1',
-      'f1': 'bvfx-2',
-      'jurassic world': 'bvfx-3',
-      'lost bus': 'bvfx-4',
-      'sinners': 'bvfx-5',
+      'frankenstein': 'bvfx-2',
+      'superman': 'bvfx-3',
+      'wicked': 'bvfx-4',
+      'mission': 'bvfx-5',
+    },
+  },
+  // ===== FEATURES =====
+  {
+    slug: 'oscars-2026-best-animated-feature-film-winner',
+    nominees: {
+      'kpop demon hunters': 'baf-1',
+      'k-pop demon hunters': 'baf-1',
+      'demon hunters': 'baf-1',
+      'elio': 'baf-2',
+      'legend of ochi': 'baf-3',
+      'last airbender': 'baf-4',
+      'sandman': 'baf-5',
     },
   },
   {
-    slug: 'oscars-2026-best-casting-winner',
+    slug: 'oscars-2026-best-international-feature-film-winner',
     nominees: {
-      'sinners': 'bcast-1',
-      'one battle after another': 'bcast-2',
-      'hamnet': 'bcast-3',
-      'marty supreme': 'bcast-4',
-      'the secret agent': 'bcast-5',
+      'sentimental value': 'bif-1',
+      'the secret agent': 'bif-2',
+      'ugly stepsister': 'bif-3',
+      'kokuho': 'bif-4',
+      'waves': 'bif-5',
+    },
+  },
+  {
+    slug: 'oscars-2026-best-documentary-feature-film-winner',
+    nominees: {
+      'searching for amani': 'bdf-1',
+      'amani': 'bdf-1',
+      'nobody against putin': 'bdf-2',
+      'mr. nobody': 'bdf-2',
+      'battle for laikipia': 'bdf-3',
+      'laikipia': 'bdf-3',
+      'eno': 'bdf-4',
+      'soundtrack to a coup': 'bdf-5',
+      'coup d\'etat': 'bdf-5',
+    },
+  },
+  // ===== SHORTS =====
+  {
+    slug: 'oscars-2026-best-animated-short-film-winner',
+    nominees: {
+      'butterfly': 'bash-1',
+      'cried pearls': 'bash-2',
+      'girl who cried': 'bash-2',
+      'shadow of the cypress': 'bash-3',
+      'cypress': 'bash-3',
+      'bear named wojtek': 'bash-4',
+      'wojtek': 'bash-4',
+      'yuck': 'bash-5',
     },
   },
   {
     slug: 'oscars-2026-best-live-action-short-film-winner',
     nominees: {
-      "butcher": 'blas-1',
-      "friend of dorothy": 'blas-2',
-      "jane austen": 'blas-3',
-      "singers": 'blas-4',
-      "two people": 'blas-5',
+      'two people': 'blas-1',
+      'exchanging saliva': 'blas-1',
+      'friend of dorothy': 'blas-2',
+      'dorothy': 'blas-2',
+      'singers': 'blas-3',
+      'anuja': 'blas-4',
+      'not a robot': 'blas-5',
+      'i\'m not a robot': 'blas-5',
     },
   },
   {
     slug: 'oscars-2026-best-documentary-short-film-winner-513',
     nominees: {
-      'empty rooms': 'bdsh-1',
-      'armed only': 'bdsh-2',
-      'children no more': 'bdsh-3',
-      'devil is busy': 'bdsh-4',
-      'strangeness': 'bdsh-5',
-    },
-  },
-  {
-    slug: 'oscars-2026-best-animated-short-film-winner',
-    nominees: {
-      'butterfly': 'bash-1',
-      'forevergreen': 'bash-2',
-      'cried pearls': 'bash-3',
-      'retirement plan': 'bash-4',
-      'three sisters': 'bash-5',
+      'instruments': 'bds-1',
+      'beating heart': 'bds-1',
+      'only girl': 'bds-2',
+      'orchestra': 'bds-2',
+      'death by numbers': 'bds-3',
+      'i am ready': 'bds-4',
+      'warden': 'bds-4',
+      'incident': 'bds-5',
     },
   },
 ];
@@ -286,11 +312,14 @@ export default async function handler(req, res) {
   );
 
   const updates = [];
+  const matched = [];
+  const unmatched = [];
   const errors = [];
   const log = [];
 
   for (const category of CATEGORIES) {
     try {
+      // Fetch without active filter — some events may not have active=true
       const url = `https://gamma-api.polymarket.com/events?slug=${category.slug}`;
       const response = await fetch(url);
       if (!response.ok) {
@@ -313,11 +342,24 @@ export default async function handler(req, res) {
         if (prob === null || prob <= 0 || prob > 1) continue;
 
         // Match against this category's nominees only (scoped)
+        let didMatch = false;
         for (const [keyword, nomineeId] of Object.entries(category.nominees)) {
           if (question.includes(keyword.toLowerCase())) {
-            updates.push({ nominee_id: nomineeId, odds: prob });
+            // Avoid duplicate updates — only keep highest prob for each nominee
+            const existing = updates.find(u => u.nominee_id === nomineeId);
+            if (!existing || prob > existing.odds) {
+              if (existing) {
+                updates.splice(updates.indexOf(existing), 1);
+              }
+              updates.push({ nominee_id: nomineeId, odds: prob });
+              matched.push(`${nomineeId}: "${keyword}" in "${question}" = ${prob}`);
+            }
+            didMatch = true;
             break;
           }
+        }
+        if (!didMatch && prob > 0.005) {
+          unmatched.push(`${category.slug}: "${question}" (${prob}) — no keyword match`);
         }
       }
     } catch (err) {
@@ -325,21 +367,28 @@ export default async function handler(req, res) {
     }
   }
 
-  // Upsert to Supabase
+  // Upsert to Supabase odds table
   let saved = 0;
+  let upsertErrors = [];
   for (const update of updates) {
     const { error } = await supabase
       .from('odds')
       .upsert(update, { onConflict: 'nominee_id' });
-    if (!error) saved++;
-    else errors.push(`Supabase upsert failed for ${update.nominee_id}: ${error.message}`);
+    if (!error) {
+      saved++;
+    } else {
+      upsertErrors.push(`${update.nominee_id}: ${error.message}`);
+    }
   }
 
   return res.status(200).json({
     success: true,
-    message: `Saved ${saved} / ${updates.length} odds`,
+    message: `Saved ${saved} / ${updates.length} odds across ${CATEGORIES.length} categories`,
     categories_fetched: log,
-    errors: errors.length ? errors : undefined,
+    matched_count: matched.length,
+    unmatched: unmatched.length ? unmatched : undefined,
+    upsert_errors: upsertErrors.length ? upsertErrors : undefined,
+    fetch_errors: errors.length ? errors : undefined,
     timestamp: new Date().toISOString(),
   });
 }
