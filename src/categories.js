@@ -1,5 +1,5 @@
 // All 24 Oscar categories with nominees and current Polymarket odds
-// Updated: March 11, 2026 (from live Polymarket data)
+// Updated: March 12, 2026 (from live Polymarket data)
 
 export const CATEGORIES = [
   // ===== THE BIG 8 =====
@@ -40,11 +40,11 @@ export const CATEGORIES = [
     emoji: "🎭",
     polymarketSlug: "oscars-2026-best-actor-winner",
     nominees: [
-      { id: "ba-1", name: "Michael B. Jordan", meta: "Sinners", odds: 0.57 },
-      { id: "ba-2", name: "Timothée Chalamet", meta: "Marty Supreme", odds: 0.34 },
-      { id: "ba-3", name: "Leonardo DiCaprio", meta: "One Battle After Another", odds: 0.05 },
-      { id: "ba-4", name: "Wagner Moura", meta: "The Secret Agent", odds: 0.02 },
-      { id: "ba-5", name: "Ethan Hawke", meta: "Blue Moon", odds: 0.02 },
+      { id: "ba-1", name: "Michael B. Jordan", meta: "Sinners", odds: 0.47 },
+      { id: "ba-2", name: "Timothée Chalamet", meta: "Marty Supreme", odds: 0.39 },
+      { id: "ba-3", name: "Leonardo DiCaprio", meta: "One Battle After Another", odds: 0.07 },
+      { id: "ba-4", name: "Wagner Moura", meta: "The Secret Agent", odds: 0.04 },
+      { id: "ba-5", name: "Ethan Hawke", meta: "Blue Moon", odds: 0.03 },
     ]
   },
   {
@@ -115,42 +115,16 @@ export const CATEGORIES = [
 
   // ===== TECHNICAL CATEGORIES =====
   {
-    id: "best-animated-feature",
-    name: "Best Animated Feature",
-    emoji: "🎨",
-    polymarketSlug: "oscars-2026-best-animated-feature-film-winner",
+    id: "best-casting",
+    name: "Best Casting",
+    emoji: "🎯",
+    polymarketSlug: "oscars-2026-best-casting-winner",
     nominees: [
-      { id: "baf-1", name: "KPop Demon Hunters", meta: "Chris Williams", odds: 0.91 },
-      { id: "baf-2", name: "Elio", meta: "Adrian Molina", odds: 0.04 },
-      { id: "baf-3", name: "The Legend of Ochi", meta: "Isaiah Saxon", odds: 0.03 },
-      { id: "baf-4", name: "Avatar: The Last Airbender", meta: "Steve Ahn", odds: 0.01 },
-      { id: "baf-5", name: "The Sandman", meta: "Unknown", odds: 0.01 },
-    ]
-  },
-  {
-    id: "best-international-feature",
-    name: "Best International Feature",
-    emoji: "🌍",
-    polymarketSlug: "oscars-2026-best-international-feature-film-winner",
-    nominees: [
-      { id: "bif-1", name: "Sentimental Value", meta: "Norway", odds: 0.67 },
-      { id: "bif-2", name: "The Secret Agent", meta: "Brazil", odds: 0.20 },
-      { id: "bif-3", name: "The Ugly Stepsister", meta: "Denmark", odds: 0.06 },
-      { id: "bif-4", name: "Kokuho", meta: "Japan", odds: 0.04 },
-      { id: "bif-5", name: "Waves", meta: "Czech Republic", odds: 0.03 },
-    ]
-  },
-  {
-    id: "best-documentary-feature",
-    name: "Best Documentary Feature",
-    emoji: "📹",
-    polymarketSlug: "oscars-2026-best-documentary-feature-winner",
-    nominees: [
-      { id: "bdf-1", name: "Searching for Amani", meta: "Unknown", odds: 0.40 },
-      { id: "bdf-2", name: "Mr. Nobody Against Putin", meta: "Unknown", odds: 0.30 },
-      { id: "bdf-3", name: "The Battle for Laikipia", meta: "Unknown", odds: 0.15 },
-      { id: "bdf-4", name: "Eno", meta: "Unknown", odds: 0.10 },
-      { id: "bdf-5", name: "Soundtrack to a Coup d'Etat", meta: "Unknown", odds: 0.05 },
+      { id: "bcast-1", name: "Sinners", meta: "Francine Maisler", odds: 0.80 },
+      { id: "bcast-2", name: "One Battle After Another", meta: "Unknown", odds: 0.13 },
+      { id: "bcast-3", name: "Hamnet", meta: "Unknown", odds: 0.03 },
+      { id: "bcast-4", name: "Marty Supreme", meta: "Unknown", odds: 0.02 },
+      { id: "bcast-5", name: "The Secret Agent", meta: "Unknown", odds: 0.02 },
     ]
   },
   {
@@ -199,7 +173,7 @@ export const CATEGORIES = [
     polymarketSlug: "oscars-2026-best-costume-design-winner",
     nominees: [
       { id: "bcd-1", name: "Frankenstein", meta: "Luis Sequeira", odds: 0.89 },
-      { id: "bcd-2", name: "Sinners", meta: "Unknown", odds: 0.05 },
+      { id: "bcd-2", name: "Sinners", meta: "Ruth E. Carter", odds: 0.05 },
       { id: "bcd-3", name: "Hamnet", meta: "Unknown", odds: 0.03 },
       { id: "bcd-4", name: "Avatar: Fire and Ash", meta: "Unknown", odds: 0.02 },
       { id: "bcd-5", name: "Marty Supreme", meta: "Unknown", odds: 0.01 },
@@ -271,6 +245,47 @@ export const CATEGORIES = [
     ]
   },
 
+  // ===== FEATURES =====
+  {
+    id: "best-animated-feature",
+    name: "Best Animated Feature",
+    emoji: "🎨",
+    polymarketSlug: "oscars-2026-best-animated-feature-film-winner",
+    nominees: [
+      { id: "baf-1", name: "KPop Demon Hunters", meta: "Chris Williams", odds: 0.91 },
+      { id: "baf-2", name: "Elio", meta: "Adrian Molina", odds: 0.04 },
+      { id: "baf-3", name: "The Legend of Ochi", meta: "Isaiah Saxon", odds: 0.03 },
+      { id: "baf-4", name: "Avatar: The Last Airbender", meta: "Steve Ahn", odds: 0.01 },
+      { id: "baf-5", name: "The Sandman", meta: "Unknown", odds: 0.01 },
+    ]
+  },
+  {
+    id: "best-international-feature",
+    name: "Best International Feature",
+    emoji: "🌍",
+    polymarketSlug: "oscars-2026-best-international-feature-film-winner",
+    nominees: [
+      { id: "bif-1", name: "Sentimental Value", meta: "Norway", odds: 0.67 },
+      { id: "bif-2", name: "The Secret Agent", meta: "Brazil", odds: 0.20 },
+      { id: "bif-3", name: "The Ugly Stepsister", meta: "Denmark", odds: 0.06 },
+      { id: "bif-4", name: "Kokuho", meta: "Japan", odds: 0.04 },
+      { id: "bif-5", name: "Waves", meta: "Czech Republic", odds: 0.03 },
+    ]
+  },
+  {
+    id: "best-documentary-feature",
+    name: "Best Documentary Feature",
+    emoji: "📹",
+    polymarketSlug: "oscars-2026-best-documentary-feature-winner",
+    nominees: [
+      { id: "bdf-1", name: "Searching for Amani", meta: "Unknown", odds: 0.40 },
+      { id: "bdf-2", name: "Mr. Nobody Against Putin", meta: "Unknown", odds: 0.30 },
+      { id: "bdf-3", name: "The Battle for Laikipia", meta: "Unknown", odds: 0.15 },
+      { id: "bdf-4", name: "Eno", meta: "Unknown", odds: 0.10 },
+      { id: "bdf-5", name: "Soundtrack to a Coup d'Etat", meta: "Unknown", odds: 0.05 },
+    ]
+  },
+
   // ===== SHORTS =====
   {
     id: "best-animated-short",
@@ -333,6 +348,7 @@ export const CATEGORY_GROUPS = [
     name: "Technical Awards",
     emoji: "🎬",
     categoryIds: [
+      "best-casting",
       "best-cinematography",
       "best-film-editing",
       "best-production-design",
