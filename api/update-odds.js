@@ -1,13 +1,5 @@
 // Fetches live odds from Polymarket for all 24 Oscar categories
-// Strategy: query /events?slug= for each category, then scan all child markets
-// and match nominees by substring search against question text.
-// Scoped per-category to prevent cross-category ID collisions.
-//
-// IMPORTANT: Only keeps matches for nominee IDs defined in categories.js.
-// Polymarket events often have 15+ markets (all possible nominees),
-// but we only care about the actual Oscar nominees (5 per category, 10 for BP).
-//
-// Updated: March 12, 2026
+// Updated: March 12, 2026 — corrected all nominees, IDs match categories.js
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -154,10 +146,10 @@ const CATEGORIES = [
     slug: 'oscars-2026-best-makeup-and-hairstyling-winner',
     nominees: {
       'frankenstein': 'bmh-1',
-      'sinners': 'bmh-2',
-      'ugly stepsister': 'bmh-3',
-      'one battle after another': 'bmh-4',
-      'kokuho': 'bmh-5',
+      'kokuho': 'bmh-2',
+      'sinners': 'bmh-3',
+      'smashing machine': 'bmh-4',
+      'ugly stepsister': 'bmh-5',
     },
   },
   {
@@ -218,65 +210,64 @@ const CATEGORIES = [
     nominees: {
       'sentimental value': 'bif-1',
       'the secret agent': 'bif-2',
-      'ugly stepsister': 'bif-3',
-      'kokuho': 'bif-4',
-      // 'waves' removed — too generic, could false-match
+      'it was just an accident': 'bif-3',
+      'sirat': 'bif-4',
+      'hind rajab': 'bif-5',
     },
   },
   {
     slug: 'oscars-2026-best-documentary-feature-film-winner',
     nominees: {
-      'searching for amani': 'bdf-1',
-      'nobody against putin': 'bdf-2',
-      'mr. nobody against': 'bdf-2',
-      'battle for laikipia': 'bdf-3',
-      'laikipia': 'bdf-3',
-      // 'eno' removed — matches substrings like "Forevergreen", "Reno", etc.
-      // Use the full title instead:
-      'will eno win': 'bdf-4',
-      'soundtrack to a coup': 'bdf-5',
+      'alabama solution': 'bdf-1',
+      'come see me': 'bdf-2',
+      'good light': 'bdf-2',
+      'cutting through rocks': 'bdf-3',
+      'nobody against putin': 'bdf-4',
+      'mr. nobody': 'bdf-4',
+      'perfect neighbor': 'bdf-5',
     },
   },
   // ===== SHORTS =====
   {
     slug: 'oscars-2026-best-animated-short-film-winner',
     nominees: {
-      // Use longer, more specific substrings to avoid false matches
       'butterfly': 'bash-1',
-      'girl who cried pearls': 'bash-2',
-      'cried pearls': 'bash-2',
-      'shadow of the cypress': 'bash-3',
-      'bear named wojtek': 'bash-4',
-      'wojtek': 'bash-4',
-      'yuck': 'bash-5',
+      'papillon': 'bash-1',
+      'forevergreen': 'bash-2',
+      'girl who cried pearls': 'bash-3',
+      'cried pearls': 'bash-3',
+      'retirement plan': 'bash-4',
+      'three sisters': 'bash-5',
     },
   },
   {
     slug: 'oscars-2026-best-live-action-short-film-winner',
     nominees: {
-      'two people exchanging': 'blas-1',
-      'exchanging saliva': 'blas-1',
+      "butcher's stain": 'blas-1',
+      'butcher': 'blas-1',
       'friend of dorothy': 'blas-2',
-      'the singers': 'blas-3',
-      'anuja': 'blas-4',
-      'not a robot': 'blas-5',
+      'jane austen': 'blas-3',
+      'period drama': 'blas-3',
+      'the singers': 'blas-4',
+      'two people exchanging': 'blas-5',
+      'exchanging saliva': 'blas-5',
     },
   },
   {
     slug: 'oscars-2026-best-documentary-short-film-winner-513',
     nominees: {
-      'instruments of a beating': 'bds-1',
-      'beating heart': 'bds-1',
-      'only girl in the orchestra': 'bds-2',
-      'death by numbers': 'bds-3',
-      'i am ready, warden': 'bds-4',
-      // 'incident' removed — too generic. Use full title:
-      'incident': 'bds-5',
+      'empty rooms': 'bds-1',
+      'armed only': 'bds-2',
+      'brent renaud': 'bds-2',
+      'children no more': 'bds-3',
+      'devil is busy': 'bds-4',
+      'perfectly a strangeness': 'bds-5',
+      'strangeness': 'bds-5',
     },
   },
 ];
 
-// Parse outcomePrices safely - Polymarket returns it as a JSON-encoded string
+// Parse outcomePrices safely
 function parsePrices(market) {
   try {
     const outcomes = JSON.parse(market.outcomes || '[]');
@@ -300,8 +291,7 @@ export default async function handler(req, res) {
     process.env.VITE_SUPABASE_ANON_KEY
   );
 
-  // Collect one odds value per nominee ID (highest probability wins if dupe)
-  const oddsMap = new Map(); // nomineeId -> { nominee_id, odds }
+  const oddsMap = new Map();
   const matched = [];
   const unmatched = [];
   const errors = [];
@@ -325,9 +315,6 @@ export default async function handler(req, res) {
       const markets = events[0].markets || [];
       log.push(`${category.slug}: ${markets.length} markets`);
 
-      // Collect valid nominee IDs for this category to prevent duplicates
-      const validIds = new Set(Object.values(category.nominees));
-
       for (const market of markets) {
         const question = (market.question || '').toLowerCase();
         const prob = parsePrices(market);
@@ -336,7 +323,6 @@ export default async function handler(req, res) {
         let didMatch = false;
         for (const [keyword, nomineeId] of Object.entries(category.nominees)) {
           if (question.includes(keyword.toLowerCase())) {
-            // Only keep highest-prob match per nominee ID
             const existing = oddsMap.get(nomineeId);
             if (!existing || prob > existing.odds) {
               oddsMap.set(nomineeId, { nominee_id: nomineeId, odds: prob });
@@ -355,10 +341,8 @@ export default async function handler(req, res) {
     }
   }
 
-  // Convert map to array for upsert
   const updates = Array.from(oddsMap.values());
 
-  // Upsert to Supabase odds table
   let saved = 0;
   let upsertErrors = [];
   for (const update of updates) {
