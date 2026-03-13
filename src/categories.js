@@ -133,11 +133,11 @@ export const CATEGORIES = [
     emoji: "📷",
     polymarketSlug: "oscars-2026-best-cinematography-winner",
     nominees: [
-      { id: "bc-1", name: "One Battle After Another", meta: "Unknown", odds: 0.74 },
+      { id: "bc-1", name: "One Battle After Another", meta: "", odds: 0.74 },
       { id: "bc-2", name: "Sinners", meta: "Autumn Durald Arkapaw", odds: 0.19 },
       { id: "bc-3", name: "Frankenstein", meta: "Dan Laustsen", odds: 0.04 },
       { id: "bc-4", name: "Marty Supreme", meta: "Darius Khondji", odds: 0.02 },
-      { id: "bc-5", name: "Train Dreams", meta: "Unknown", odds: 0.01 },
+      { id: "bc-5", name: "Train Dreams", meta: "", odds: 0.01 },
     ]
   },
   {
@@ -146,11 +146,11 @@ export const CATEGORIES = [
     emoji: "✂️",
     polymarketSlug: "oscars-2026-best-film-editing-winner",
     nominees: [
-      { id: "bfe-1", name: "One Battle After Another", meta: "Unknown", odds: 0.55 },
-      { id: "bfe-2", name: "Sinners", meta: "Unknown", odds: 0.20 },
+      { id: "bfe-1", name: "One Battle After Another", meta: "", odds: 0.55 },
+      { id: "bfe-2", name: "Sinners", meta: "", odds: 0.20 },
       { id: "bfe-3", name: "Marty Supreme", meta: "Ronald Bronstein & Benny Safdie", odds: 0.10 },
-      { id: "bfe-4", name: "F1", meta: "Unknown", odds: 0.08 },
-      { id: "bfe-5", name: "Sentimental Value", meta: "Unknown", odds: 0.07 },
+      { id: "bfe-4", name: "F1", meta: "", odds: 0.08 },
+      { id: "bfe-5", name: "Sentimental Value", meta: "", odds: 0.07 },
     ]
   },
   {
@@ -174,9 +174,9 @@ export const CATEGORIES = [
     nominees: [
       { id: "bcd-1", name: "Frankenstein", meta: "Luis Sequeira", odds: 0.89 },
       { id: "bcd-2", name: "Sinners", meta: "Ruth E. Carter", odds: 0.05 },
-      { id: "bcd-3", name: "Hamnet", meta: "Unknown", odds: 0.03 },
-      { id: "bcd-4", name: "Avatar: Fire and Ash", meta: "Unknown", odds: 0.02 },
-      { id: "bcd-5", name: "Marty Supreme", meta: "Unknown", odds: 0.01 },
+      { id: "bcd-3", name: "Hamnet", meta: "", odds: 0.03 },
+      { id: "bcd-4", name: "Avatar: Fire and Ash", meta: "", odds: 0.02 },
+      { id: "bcd-5", name: "Marty Supreme", meta: "", odds: 0.01 },
     ]
   },
   {
@@ -199,10 +199,10 @@ export const CATEGORIES = [
     polymarketSlug: "oscars-2026-best-original-score-winner",
     nominees: [
       { id: "bsc-1", name: "Sinners", meta: "Ludwig Göransson", odds: 0.87 },
-      { id: "bsc-2", name: "One Battle After Another", meta: "Unknown", odds: 0.06 },
+      { id: "bsc-2", name: "One Battle After Another", meta: "", odds: 0.06 },
       { id: "bsc-3", name: "Frankenstein", meta: "Alexandre Desplat", odds: 0.04 },
-      { id: "bsc-4", name: "Hamnet", meta: "Unknown", odds: 0.02 },
-      { id: "bsc-5", name: "Bugonia", meta: "Unknown", odds: 0.01 },
+      { id: "bsc-4", name: "Hamnet", meta: "", odds: 0.02 },
+      { id: "bsc-5", name: "Bugonia", meta: "", odds: 0.01 },
     ]
   },
   {
@@ -224,11 +224,11 @@ export const CATEGORIES = [
     emoji: "🔊",
     polymarketSlug: "oscars-2026-best-sound-winner",
     nominees: [
-      { id: "bsd-1", name: "Sinners", meta: "Unknown", odds: 0.45 },
-      { id: "bsd-2", name: "F1", meta: "Unknown", odds: 0.30 },
-      { id: "bsd-3", name: "One Battle After Another", meta: "Unknown", odds: 0.10 },
-      { id: "bsd-4", name: "Frankenstein", meta: "Unknown", odds: 0.08 },
-      { id: "bsd-5", name: "Sirāt", meta: "Unknown", odds: 0.07 },
+      { id: "bsd-1", name: "Sinners", meta: "", odds: 0.45 },
+      { id: "bsd-2", name: "F1", meta: "", odds: 0.30 },
+      { id: "bsd-3", name: "One Battle After Another", meta: "", odds: 0.10 },
+      { id: "bsd-4", name: "Frankenstein", meta: "", odds: 0.08 },
+      { id: "bsd-5", name: "Sirāt", meta: "", odds: 0.07 },
     ]
   },
   {
@@ -238,10 +238,10 @@ export const CATEGORIES = [
     polymarketSlug: "oscars-2026-best-visual-effects-winner",
     nominees: [
       { id: "bvfx-1", name: "Avatar: Fire and Ash", meta: "Wētā FX", odds: 0.70 },
-      { id: "bvfx-2", name: "F1", meta: "Unknown", odds: 0.10 },
-      { id: "bvfx-3", name: "Jurassic World Rebirth", meta: "Unknown", odds: 0.08 },
-      { id: "bvfx-4", name: "The Lost Bus", meta: "Unknown", odds: 0.06 },
-      { id: "bvfx-5", name: "Sinners", meta: "Unknown", odds: 0.06 },
+      { id: "bvfx-2", name: "F1", meta: "", odds: 0.10 },
+      { id: "bvfx-3", name: "Jurassic World Rebirth", meta: "", odds: 0.08 },
+      { id: "bvfx-4", name: "The Lost Bus", meta: "", odds: 0.06 },
+      { id: "bvfx-5", name: "Sinners", meta: "", odds: 0.06 },
     ]
   },
 
@@ -255,8 +255,8 @@ export const CATEGORIES = [
       { id: "baf-1", name: "KPop Demon Hunters", meta: "Chris Williams", odds: 0.91 },
       { id: "baf-2", name: "Zootopia 2", meta: "Trent Correy", odds: 0.04 },
       { id: "baf-3", name: "Elio", meta: "Adrian Molina", odds: 0.03 },
-      { id: "baf-4", name: "Little Amélie or the Character of Rain", meta: "Unknown", odds: 0.01 },
-      { id: "baf-5", name: "Arco", meta: "Unknown", odds: 0.01 },
+      { id: "baf-4", name: "Little Amélie or the Character of Rain", meta: "", odds: 0.01 },
+      { id: "baf-5", name: "Arco", meta: "", odds: 0.01 },
     ]
   },
   {
@@ -306,10 +306,10 @@ export const CATEGORIES = [
     emoji: "🎥",
     polymarketSlug: "oscars-2026-best-live-action-short-film-winner",
     nominees: [
-      { id: "blas-1", name: "Butcher's Stain", meta: "Unknown", odds: 0.15 },
+      { id: "blas-1", name: "Butcher's Stain", meta: "", odds: 0.15 },
       { id: "blas-2", name: "A Friend of Dorothy", meta: "UK", odds: 0.25 },
-      { id: "blas-3", name: "Jane Austen's Period Drama", meta: "Unknown", odds: 0.15 },
-      { id: "blas-4", name: "The Singers", meta: "Unknown", odds: 0.25 },
+      { id: "blas-3", name: "Jane Austen's Period Drama", meta: "", odds: 0.15 },
+      { id: "blas-4", name: "The Singers", meta: "", odds: 0.25 },
       { id: "blas-5", name: "Two People Exchanging Saliva", meta: "France", odds: 0.20 },
     ]
   },
