@@ -276,7 +276,7 @@ export const CATEGORIES = [
     id: "best-documentary-feature",
     name: "Best Documentary Feature",
     emoji: "📹",
-    polymarketSlug: "oscars-2026-best-documentary-feature-winner",
+    polymarketSlug: "oscars-2026-best-documentary-feature-film-winner",
     nominees: [
       { id: "bdf-1", name: "Searching for Amani", meta: "Unknown", odds: 0.40 },
       { id: "bdf-2", name: "Mr. Nobody Against Putin", meta: "Unknown", odds: 0.30 },
@@ -381,4 +381,9 @@ export const CATEGORY_GROUPS = [
 ];
 
 // Calculate points for correct pick
-export const calculatePoints = (odds) => Math.round(100 * (1 - odds));
+// 10 / odds, with a floor of 10
+// Examples: 50% → 20pts, 25% → 40pts, 10% → 100pts, 90% → 11pts
+export const calculatePoints = (odds) => {
+  if (!odds || odds <= 0) return 10;
+  return Math.max(10, Math.round(10 / odds));
+};
