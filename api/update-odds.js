@@ -1,5 +1,5 @@
 // Fetches live odds from Polymarket for all 24 Oscar categories
-// Updated: March 12, 2026 — corrected all nominees, IDs match categories.js
+// VERIFIED against oscars.org — March 12, 2026
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -45,9 +45,9 @@ const CATEGORIES = [
     nominees: {
       'jessie buckley': 'bac-1',
       'rose byrne': 'bac-2',
-      'emma stone': 'bac-3',
+      'kate hudson': 'bac-3',
       'renate reinsve': 'bac-4',
-      'kate hudson': 'bac-5',
+      'emma stone': 'bac-5',
     },
   },
   {
@@ -109,7 +109,7 @@ const CATEGORIES = [
       'sinners': 'bc-2',
       'frankenstein': 'bc-3',
       'marty supreme': 'bc-4',
-      'hamnet': 'bc-5',
+      'train dreams': 'bc-5',
     },
   },
   {
@@ -167,9 +167,9 @@ const CATEGORIES = [
     nominees: {
       'golden': 'bsn-1',
       'i lied to you': 'bsn-2',
-      'mi camino': 'bsn-3',
-      'kiss the sky': 'bsn-4',
-      'never too late': 'bsn-5',
+      'train dreams': 'bsn-3',
+      'dear me': 'bsn-4',
+      'sweet dreams': 'bsn-5',
     },
   },
   {
@@ -179,17 +179,17 @@ const CATEGORIES = [
       'f1': 'bsd-2',
       'one battle after another': 'bsd-3',
       'frankenstein': 'bsd-4',
-      'mission impossible': 'bsd-5',
+      'sirat': 'bsd-5',
     },
   },
   {
     slug: 'oscars-2026-best-visual-effects-winner',
     nominees: {
       'avatar': 'bvfx-1',
-      'frankenstein': 'bvfx-2',
-      'superman': 'bvfx-3',
-      'wicked': 'bvfx-4',
-      'mission impossible': 'bvfx-5',
+      'f1': 'bvfx-2',
+      'jurassic world': 'bvfx-3',
+      'lost bus': 'bvfx-4',
+      'sinners': 'bvfx-5',
     },
   },
   // ===== FEATURES =====
@@ -199,10 +199,10 @@ const CATEGORIES = [
       'kpop demon hunters': 'baf-1',
       'k-pop demon hunters': 'baf-1',
       'demon hunters': 'baf-1',
-      'elio': 'baf-2',
-      'legend of ochi': 'baf-3',
-      'last airbender': 'baf-4',
-      'sandman': 'baf-5',
+      'zootopia': 'baf-2',
+      'elio': 'baf-3',
+      'am': 'baf-4',
+      'arco': 'baf-5',
     },
   },
   {
@@ -243,8 +243,7 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-live-action-short-film-winner',
     nominees: {
-      "butcher's stain": 'blas-1',
-      'butcher': 'blas-1',
+      "butcher": 'blas-1',
       'friend of dorothy': 'blas-2',
       'jane austen': 'blas-3',
       'period drama': 'blas-3',
@@ -267,7 +266,6 @@ const CATEGORIES = [
   },
 ];
 
-// Parse outcomePrices safely
 function parsePrices(market) {
   try {
     const outcomes = JSON.parse(market.outcomes || '[]');
@@ -305,13 +303,11 @@ export default async function handler(req, res) {
         errors.push(`HTTP ${response.status} for ${category.slug}`);
         continue;
       }
-
       const events = await response.json();
       if (!events?.length) {
         errors.push(`No event found: ${category.slug}`);
         continue;
       }
-
       const markets = events[0].markets || [];
       log.push(`${category.slug}: ${markets.length} markets`);
 
@@ -342,18 +338,14 @@ export default async function handler(req, res) {
   }
 
   const updates = Array.from(oddsMap.values());
-
   let saved = 0;
   let upsertErrors = [];
   for (const update of updates) {
     const { error } = await supabase
       .from('odds')
       .upsert(update, { onConflict: 'nominee_id' });
-    if (!error) {
-      saved++;
-    } else {
-      upsertErrors.push(`${update.nominee_id}: ${error.message}`);
-    }
+    if (!error) saved++;
+    else upsertErrors.push(`${update.nominee_id}: ${error.message}`);
   }
 
   return res.status(200).json({
