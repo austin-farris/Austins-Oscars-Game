@@ -935,7 +935,7 @@ export default function App() {
 
       {/* Footer */}
       <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid rgba(255,215,0,0.2)', fontFamily: "'Helvetica Neue', sans-serif", fontSize: '0.8rem', opacity: 0.5 }}>
-        Points = 100 × (1 - odds) · Riskier picks = more points · Real-time sync ⚡
+        Points = 10 ÷ odds · 50% = 20pts · 10% = 100pts · Min 10pts · Riskier picks = more points ⚡
       </footer>
     </div>
   );
