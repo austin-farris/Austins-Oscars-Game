@@ -3,13 +3,14 @@
 // and match nominees by substring search against question text.
 // Scoped per-category to prevent cross-category ID collisions.
 //
-// Updated: March 12, 2026 — nominee IDs matched to categories.js
+// IMPORTANT: Only keeps matches for nominee IDs defined in categories.js.
+// Polymarket events often have 15+ markets (all possible nominees),
+// but we only care about the actual Oscar nominees (5 per category, 10 for BP).
+//
+// Updated: March 12, 2026
 
 import { createClient } from '@supabase/supabase-js';
 
-// Map of event slugs -> nominee keyword maps
-// Keywords are lowercase substrings to match against market.question
-// Values are our nominee_ids from categories.js
 const CATEGORIES = [
   {
     slug: 'oscars-2026-best-picture-winner',
@@ -39,11 +40,9 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-actor-winner',
     nominees: {
-      'michael b': 'ba-1',
-      'jordan': 'ba-1',
-      'timothe': 'ba-2',
+      'michael b. jordan': 'ba-1',
+      'michael b jordan': 'ba-1',
       'chalamet': 'ba-2',
-      'leonardo dicaprio': 'ba-3',
       'dicaprio': 'ba-3',
       'wagner moura': 'ba-4',
       'ethan hawke': 'ba-5',
@@ -53,7 +52,6 @@ const CATEGORIES = [
     slug: 'oscars-2026-best-actress-winner',
     nominees: {
       'jessie buckley': 'bac-1',
-      'buckley': 'bac-1',
       'rose byrne': 'bac-2',
       'emma stone': 'bac-3',
       'renate reinsve': 'bac-4',
@@ -64,10 +62,8 @@ const CATEGORIES = [
     slug: 'oscars-2026-best-supporting-actor-winner',
     nominees: {
       'sean penn': 'bsa-1',
-      'stellan': 'bsa-2',
       'skarsg': 'bsa-2',
-      'benicio': 'bsa-3',
-      'del toro': 'bsa-3',
+      'benicio del toro': 'bsa-3',
       'jacob elordi': 'bsa-4',
       'delroy lindo': 'bsa-5',
     },
@@ -79,7 +75,6 @@ const CATEGORIES = [
       'teyana taylor': 'bsac-2',
       'elle fanning': 'bsac-3',
       'inga': 'bsac-4',
-      'lilleaas': 'bsac-4',
       'wunmi mosaku': 'bsac-5',
       'mosaku': 'bsac-5',
     },
@@ -91,7 +86,6 @@ const CATEGORIES = [
       'sentimental value': 'bos-2',
       'marty supreme': 'bos-3',
       'it was just an accident': 'bos-4',
-      'accident': 'bos-4',
       'blue moon': 'bos-5',
     },
   },
@@ -177,7 +171,6 @@ const CATEGORIES = [
     },
   },
   {
-    // Note: this event slug has a numeric suffix -257 on Polymarket
     slug: 'oscars-2026-best-original-song-winner-257',
     nominees: {
       'golden': 'bsn-1',
@@ -194,7 +187,7 @@ const CATEGORIES = [
       'f1': 'bsd-2',
       'one battle after another': 'bsd-3',
       'frankenstein': 'bsd-4',
-      'mission': 'bsd-5',
+      'mission impossible': 'bsd-5',
     },
   },
   {
@@ -204,7 +197,7 @@ const CATEGORIES = [
       'frankenstein': 'bvfx-2',
       'superman': 'bvfx-3',
       'wicked': 'bvfx-4',
-      'mission': 'bvfx-5',
+      'mission impossible': 'bvfx-5',
     },
   },
   // ===== FEATURES =====
@@ -227,32 +220,32 @@ const CATEGORIES = [
       'the secret agent': 'bif-2',
       'ugly stepsister': 'bif-3',
       'kokuho': 'bif-4',
-      'waves': 'bif-5',
+      // 'waves' removed — too generic, could false-match
     },
   },
   {
     slug: 'oscars-2026-best-documentary-feature-film-winner',
     nominees: {
       'searching for amani': 'bdf-1',
-      'amani': 'bdf-1',
       'nobody against putin': 'bdf-2',
-      'mr. nobody': 'bdf-2',
+      'mr. nobody against': 'bdf-2',
       'battle for laikipia': 'bdf-3',
       'laikipia': 'bdf-3',
-      'eno': 'bdf-4',
+      // 'eno' removed — matches substrings like "Forevergreen", "Reno", etc.
+      // Use the full title instead:
+      'will eno win': 'bdf-4',
       'soundtrack to a coup': 'bdf-5',
-      'coup d\'etat': 'bdf-5',
     },
   },
   // ===== SHORTS =====
   {
     slug: 'oscars-2026-best-animated-short-film-winner',
     nominees: {
+      // Use longer, more specific substrings to avoid false matches
       'butterfly': 'bash-1',
+      'girl who cried pearls': 'bash-2',
       'cried pearls': 'bash-2',
-      'girl who cried': 'bash-2',
       'shadow of the cypress': 'bash-3',
-      'cypress': 'bash-3',
       'bear named wojtek': 'bash-4',
       'wojtek': 'bash-4',
       'yuck': 'bash-5',
@@ -261,26 +254,23 @@ const CATEGORIES = [
   {
     slug: 'oscars-2026-best-live-action-short-film-winner',
     nominees: {
-      'two people': 'blas-1',
+      'two people exchanging': 'blas-1',
       'exchanging saliva': 'blas-1',
       'friend of dorothy': 'blas-2',
-      'dorothy': 'blas-2',
-      'singers': 'blas-3',
+      'the singers': 'blas-3',
       'anuja': 'blas-4',
       'not a robot': 'blas-5',
-      'i\'m not a robot': 'blas-5',
     },
   },
   {
     slug: 'oscars-2026-best-documentary-short-film-winner-513',
     nominees: {
-      'instruments': 'bds-1',
+      'instruments of a beating': 'bds-1',
       'beating heart': 'bds-1',
-      'only girl': 'bds-2',
-      'orchestra': 'bds-2',
+      'only girl in the orchestra': 'bds-2',
       'death by numbers': 'bds-3',
-      'i am ready': 'bds-4',
-      'warden': 'bds-4',
+      'i am ready, warden': 'bds-4',
+      // 'incident' removed — too generic. Use full title:
       'incident': 'bds-5',
     },
   },
@@ -296,7 +286,6 @@ function parsePrices(market) {
       return parseFloat(prices[yesIdx]);
     }
   } catch {}
-  // Fallback to bestBid
   if (market.bestBid !== undefined) return parseFloat(market.bestBid);
   return null;
 }
@@ -311,7 +300,8 @@ export default async function handler(req, res) {
     process.env.VITE_SUPABASE_ANON_KEY
   );
 
-  const updates = [];
+  // Collect one odds value per nominee ID (highest probability wins if dupe)
+  const oddsMap = new Map(); // nomineeId -> { nominee_id, odds }
   const matched = [];
   const unmatched = [];
   const errors = [];
@@ -319,7 +309,6 @@ export default async function handler(req, res) {
 
   for (const category of CATEGORIES) {
     try {
-      // Fetch without active filter — some events may not have active=true
       const url = `https://gamma-api.polymarket.com/events?slug=${category.slug}`;
       const response = await fetch(url);
       if (!response.ok) {
@@ -336,36 +325,38 @@ export default async function handler(req, res) {
       const markets = events[0].markets || [];
       log.push(`${category.slug}: ${markets.length} markets`);
 
+      // Collect valid nominee IDs for this category to prevent duplicates
+      const validIds = new Set(Object.values(category.nominees));
+
       for (const market of markets) {
         const question = (market.question || '').toLowerCase();
         const prob = parsePrices(market);
         if (prob === null || prob <= 0 || prob > 1) continue;
 
-        // Match against this category's nominees only (scoped)
         let didMatch = false;
         for (const [keyword, nomineeId] of Object.entries(category.nominees)) {
           if (question.includes(keyword.toLowerCase())) {
-            // Avoid duplicate updates — only keep highest prob for each nominee
-            const existing = updates.find(u => u.nominee_id === nomineeId);
+            // Only keep highest-prob match per nominee ID
+            const existing = oddsMap.get(nomineeId);
             if (!existing || prob > existing.odds) {
-              if (existing) {
-                updates.splice(updates.indexOf(existing), 1);
-              }
-              updates.push({ nominee_id: nomineeId, odds: prob });
-              matched.push(`${nomineeId}: "${keyword}" in "${question}" = ${prob}`);
+              oddsMap.set(nomineeId, { nominee_id: nomineeId, odds: prob });
+              matched.push(`${nomineeId} = ${prob} (matched "${keyword}")`);
             }
             didMatch = true;
             break;
           }
         }
-        if (!didMatch && prob > 0.005) {
-          unmatched.push(`${category.slug}: "${question}" (${prob}) — no keyword match`);
+        if (!didMatch && prob > 0.01) {
+          unmatched.push(`${category.slug}: "${question}" (${prob})`);
         }
       }
     } catch (err) {
       errors.push(`${category.slug}: ${err.message}`);
     }
   }
+
+  // Convert map to array for upsert
+  const updates = Array.from(oddsMap.values());
 
   // Upsert to Supabase odds table
   let saved = 0;
